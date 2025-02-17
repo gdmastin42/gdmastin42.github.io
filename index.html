@@ -3,66 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Widget</title>
+    <title>Weather App</title>
+    <!-- Bootstrap stylesheet CDN -->
     <link 
         href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/lux/bootstrap.min.css" 
         rel="stylesheet"
     > 
+    <!-- bootstrap Icons Cdn -->
     <link 
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" 
         rel="stylesheet"
     >   
-    <style>
-        .body {
-            margin: 0;
-            background-color: #343a40;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        .widget-container {
-            padding: 10px;
-            max-width: 300px;
-        }
-    </style>
-    <iframe 
-        src="https://gdmastin42.github.io" 
-        style="border: none; width: 100%; height: 300px;" 
-        title="Weather Widget">
-    </iframe>
 </head>
-<body>
-    <div class="widget-container">
-        <div id="currentWeather" class="text-left"></div>
+
+<body class="bg-dark">
+    <!-- div that holds the weather data -->
+    <div class="container">
+        <div class="card-body flex-fill bg-dark d-flex flex-column vh-100 vw-50">
+            <div id="currentWeather" class="card-body text-left text-light bg-dark">
+            </div>
+        </div>
     </div>
+
+    <!-- Bootstrap CDN -->
+    <script 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+        crossorigin="anonymous">
+    </script>
+
     <script>
         async function fetchWeather() {
-            const weatherInfo = document.getElementById('currentWeather');
-            const apiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=36.1628&longitude=-85.5016&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,cloud_cover&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch';
+            const weatherInfo = document.getElementById('currentWeather')
+            // api call
+            const apiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=36.1628&longitude=-85.5016&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,cloud_cover&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch'
 
             try {
-                const objResponse = await fetch(apiUrl);
-                const objData = await objResponse.json();
+                const objResponse = await fetch(apiUrl)
+                const objData = await objResponse.json()
 
                 if (objData && objData.current) {
-                    const temperature = objData.current.temperature_2m;
-                    const rainTotal = objData.current.precipitation;
-                    const cloudCoverage = objData.current.cloud_cover;
+                    const temperature = objData.current.temperature_2m
+                    const rainTotal = objData.current.precipitation
+                    const cloudCoverage = objData.current.cloud_cover
 
-                    weatherInfo.innerHTML = `
-                        <h4>Current Weather</h4>
-                        <p><i class="bi bi-thermometer-half"></i> Temperature: ${temperature}°F</p>
-                        <p><i class="bi bi-cloud-rain"></i> Rain Amount: ${rainTotal} inches</p>
-                        <p><i class="bi bi-clouds"></i> Cloud Coverage: ${cloudCoverage}%</p>
-                        <h5>Location: Cookeville</h5>
-                    `;
-                }
+                    // html to display the weather conditions 
+                    weatherInfo.innerHTML = 
+                    `
+                        <h1 class="text-left mb-4 text-light">Current Weather</h1>
+                        <div class="d-flex flex-column mb-3">
+                            <div class="mb-3">
+                                <h3 class="text-light"><i class="bi bi-thermometer-half "></i> Temperature</h3>
+                                <p class="mb-2">${temperature}°F</p>
+                            </div>
+                            <div class="mb-3">
+                                <h3 class="text-light"><i class="bi bi-cloud-rain "></i> Rain Amount</h3>
+                                <p class="mb-2">${rainTotal} inches</p>
+                            </div>
+                            <div class="mb-3">
+                                <h3 class="text-light"><i class="bi bi-clouds"></i> Cloud Coverage</h3>
+                                <p class="mb-2">${cloudCoverage}%</p>
+                            </div>
+
+                            <h1 class="text-light">Current Location</h1>
+                            <div>
+                                <h3 class="text-light"><i class="bi bi-geo-alt-fill"></i>Cookville</h3>
+                            </div>
+                        </div>
+                    `
+                } 
+
+            // catch errors
             } catch (error) {
-                weatherInfo.innerHTML = '<p>Error fetching weather data. Please try again later.</p>';
-                console.error('Error fetching weather data:', error);
+                console.error('Error fetching weather data:', error)
             }
         }
 
-        fetchWeather();
+        fetchWeather()
     </script>
 </body>
 </html>
+<!-- 
+I used AI (chatGpt) to help debug the api call not properaly getting the data from the call.
+I ended up having words mispelled and accessing the wrong layer of the json response
+-->
