@@ -30,12 +30,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Offline message -->
-    <div id="offline-message" class="alert alert-warning d-none" role="alert">
-        You are currently offline. Showing cached weather data.
-    </div>
-
     <!-- Bootstrap CDN -->
     <script 
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
@@ -44,25 +38,6 @@
     </script>
 
     <script>
-        // Register Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then((reg) => console.log('Service Worker registered'))
-                    .catch((err) => console.log('Service Worker registration failed:', err));
-            });
-        }
-
-        // Check online status
-        window.addEventListener('online', function(e) {
-            document.getElementById('offline-message').classList.add('d-none');
-            fetchWeather();
-        });
-
-        window.addEventListener('offline', function(e) {
-            document.getElementById('offline-message').classList.remove('d-none');
-        });
-
         async function fetchWeather() {
             const weatherInfo = document.getElementById('currentWeather')
             // api call
