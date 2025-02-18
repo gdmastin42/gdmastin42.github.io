@@ -2,7 +2,7 @@
     "name": "Weather PWA",
     "short_name": "Weather",
     "description": "A simple weather progressive web app",
-    "start_url": "/gdmastin42.github.io",
+    "start_url": "https://gdmastin42.github.io/",
     "display": "standalone",
     "background_color": "#343a40",
     "theme_color": "#343a40",
