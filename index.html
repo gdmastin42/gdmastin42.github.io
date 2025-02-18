@@ -23,7 +23,7 @@
 <body class="bg-secondary">
 
     <!-- div holds the location data -->
-    <div class="container vh-50 w-50 d-flex justify-content-center align-items-start">
+    <div class="container vh-min-50 w-min-50 d-flex justify-content-center align-items-start">
         <div class="card-body mt-5 rounded-5 bg-light text-center" id="locationData">
             <h1 class="text-dark">Current Location</h1>
             <h3 class="text-dark"><i class="bi bi-geo-alt-fill"></i> Cookville</h3>
@@ -32,7 +32,7 @@
     
 
     <!-- div that holds the weather data -->
-    <div class="container vh-50 w-50 d-flex justify-content-center align-items-start">
+    <div class="container vh-min-25 w-min-25 d-flex justify-content-center align-items-start">
         <div class="card-body mt-3 rounded-5 bg-light text-center">
             <div class="card-body mt-3 rounded-5 bg-light text-dark text-center" id="currentWeather" >
 
@@ -78,23 +78,23 @@
                     }
                     // icons for responsive cloud icons
                     let cloudLogo
-                    if (cloudCoverage <= 20) { // Clear sky
+                    if (cloudCoverage <= 15) { // Clear sky
                         cloudLogo = 'bi bi-sun' 
                     } else if (cloudCoverage <= 40) { // Partly cloudy
                         cloudLogo = 'bi bi-cloud-sun' 
                     } else if (cloudCoverage <= 70) {  // Mostly cloudy
                         cloudLogo = 'bi bi-cloud-sun-fill'
                     } else {  // Overcast
-                        cloudLogo = 'bi-cloud'
+                        cloudLogo = 'bi-cloud-fill'
                     }
 
                     // icons for response rain icons
                     let rainLogo
                     if (rainTotal === 0) { // No rain
                         rainLogo = 'bi bi-sun' 
-                    } else if (rainTotal < 0.2) { // Light drizzle
+                    } else if (rainTotal < 0.25) { // Light drizzle
                         rainLogo = 'bi bi-cloud-drizzle' 
-                    } else if (rainTotal < 0.4) { // Moderate rain
+                    } else if (rainTotal < 0.50) { // Moderate rain
                         rainLogo = 'bi-cloud-rain' 
                     } else { // Heavy rain
                         rainLogo = 'bi-cloud-rain-heavy' 
