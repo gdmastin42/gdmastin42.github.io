@@ -96,7 +96,7 @@
         try {
             const response = await fetch(apiUrl)
             const data = await response.json()
-            return data.address.city
+            return data.address.city || data.address.town || data.address.village || data.address.suburb || data.address.municipality || 'Location Unknown'
 
         } catch (error) {
             console.error("Error fetching city name:", error)
