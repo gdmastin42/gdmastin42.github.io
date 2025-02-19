@@ -23,7 +23,7 @@
     <!-- fixes issue i was having with the text wrapping on smaller cards -->
     <style>
         .icon-text {
-            white-space: nowrap;
+            white-space: nowrap
         }
     </style>
 
@@ -64,8 +64,8 @@
 
     <!-- div that holds the weather forecast data and -->
     <div class="container mt-3">
-        <div class="row justify-content-left">
-            <div class="p-1 col-6 col-md-4">
+        <div class="row justify-content-center">
+            <div class="p-1 col-12 col-md-8">
                 <div class="card rounded-5 bg-light">
                     <div class="card-body" id="forecastData">
                         <!-- html is in the script -->
@@ -84,242 +84,246 @@
         crossorigin="anonymous">
     </script>
 
-    <!-- script for logic for weather data -->
+    <!-- logic of the program -->
     <script>
+
+    // passes lat and long from the geo location
     async function fetchCityName(latitude, longitude) {
-        const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+
+        // calls api to fetch name of city
+        const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
         
         try {
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            return data.address.city || data.address.town || data.address.village || "Unknown Location";
+            const response = await fetch(apiUrl)
+            const data = await response.json()
+            return data.address.city
+
         } catch (error) {
-            console.error("Error fetching city name:", error);
-            return "Unknown Location";
+            console.error("Error fetching city name:", error)
+            Swal.fire("Error fetching city")
         }
     }
     
+    // gets lat and long as a pram
     async function fetchWeather(latitude, longitude) {
-        const weatherInfo = document.getElementById('forecastData');
-        const locationInfo = document.getElementById('locationData');
-        const rainInfo = document.getElementById('rainData');
-        const humidityInfo = document.getElementById('humidityData');
+        const weatherInfo = document.getElementById('forecastData')
+        const locationInfo = document.getElementById('locationData')
+        const rainInfo = document.getElementById('rainData')
+        const humidityInfo = document.getElementById('humidityData')
 
-        const cityName = await fetchCityName(latitude, longitude);
+        // names it cityName that way it can be used in 
+        const cityName = await fetchCityName(latitude, longitude)
 
-        const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,cloud_cover,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,cloud_cover&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto&forecast_days=7`;
+        const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,cloud_cover,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,cloud_cover&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto&forecast_days=7`
 
         try {
-            const objResponse = await fetch(apiUrl);
-            const objData = await objResponse.json();
+            const objResponse = await fetch(apiUrl)
+            const objData = await objResponse.json()
 
             if (objData && objData.current) {
-                const temperature = objData.current.temperature_2m;
-                const rainTotal = objData.current.precipitation;
-                const rainProbability = objData.hourly.precipitation_probability[167];
-                const humidity = objData.current.relative_humidity_2m;
+                const temperature = objData.current.temperature_2m
+                const rainTotal = objData.current.precipitation
+                const rainProbability = objData.hourly.precipitation_probability[167]
+                const humidity = objData.current.relative_humidity_2m
 
                 // Get daily forecast data
-                const dailyMax = objData.daily.temperature_2m_max;
-                const dailyMin = objData.daily.temperature_2m_min;
-                const dailyRainProb = objData.daily.precipitation_probability_max;
+                const dailyMax = objData.daily.temperature_2m_max
+                const dailyMin = objData.daily.temperature_2m_min
+                const dailyRainProb = objData.daily.precipitation_probability_max
 
                 // Temperature icon logic
-                let tempLogo;
+                let tempLogo
                 if (temperature <= 30) { // really cold 
-                    tempLogo = 'bi bi-thermometer'; 
+                    tempLogo = 'bi bi-thermometer' 
                 } else if (temperature <= 60) { // cold
-                    tempLogo = 'bi bi-thermometer-low';
+                    tempLogo = 'bi bi-thermometer-low'
                 } else if (temperature <= 85) { // warm
-                    tempLogo = 'bi bi-thermometer-half';
+                    tempLogo = 'bi bi-thermometer-half'
                 } else { // hot
-                    tempLogo = 'bi bi-thermometer-high';
+                    tempLogo = 'bi bi-thermometer-high'
                 }
 
                 // Rain icon logic
-                let rainLogo;
+                let rainLogo
                 if (rainTotal === 0) { // no rain
-                    rainLogo = 'bi bi-sun';
+                    rainLogo = 'bi bi-sun'
                 } else if (rainTotal < 0.25) { // lght rain
-                    rainLogo = 'bi bi-cloud-drizzle';
+                    rainLogo = 'bi bi-cloud-drizzle'
                 } else if (rainTotal < 0.50) { // medium rain
-                    rainLogo = 'bi-cloud-rain';
+                    rainLogo = 'bi-cloud-rain'
                 } else { // heavy rain
-                    rainLogo = 'bi-cloud-rain-heavy';
+                    rainLogo = 'bi-cloud-rain-heavy'
                 }
 
                 // Rain probability icon logic
                 function getRainProbLogo(rainProb) {
                     if (rainProb <= 20) { // low chance
-                        return 'bi bi-sun';
+                        return 'bi bi-sun'
                     } else if (rainProb <= 50) { // medium chance
-                        return 'bi bi-cloud-drizzle';
+                        return 'bi bi-cloud-drizzle'
                     } else if (rainProb <= 75) { // high chance
-                        return 'bi bi-cloud-rain';
+                        return 'bi bi-cloud-rain'
                     } else { // everything else
-                        return 'bi bi-cloud-rain-heavy';
+                        return 'bi bi-cloud-rain-heavy'
                     }
                 }
 
                 // Update location info
-                locationInfo.innerHTML = `
+                locationInfo.innerHTML = 
+                `
                     <h1 class="text-dark p-3"><i class="bi bi-geo-alt-fill me-1"></i>${cityName}</h1>
                     <div class="mb-3 d-flex align-items-center justify-content-center">
                         <h1 class="text-dark"><i class="${tempLogo}">${temperature}°F</i></h1>
                     </div>
-                `;
+                `
                 
                 // Update rain info
-                rainInfo.innerHTML = `
+                rainInfo.innerHTML = 
+                `
                     <h1 class="text-dark text-center"><u><i class="${getRainProbLogo(dailyRainProb)} me-1"></i>Rain</u></h1>
                     <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
                         <h3 class="text-dark mb-2">${rainTotal}″ inches</h3>
                         <h3 class="text-dark">${rainProbability}%</h3>
                     </div>
-                `;
+                `
 
                 // Update humidity info
-                humidityInfo.innerHTML = `
+                humidityInfo.innerHTML = 
+                `
                     <h1 class="text-dark text-center icon-text"><u><i class="bi bi-moisture me-1"></i>Humidity</u></h1>
                     <div class="flex-grow-1 d-flex align-items-center justify-content-center">
                         <h2 class="text-dark">${humidity}%</h2>
                     </div>
-                `;
+                `
                 
                 // 7-day forecast 
-                weatherInfo.innerHTML = `
+                weatherInfo.innerHTML = 
+                `
                     <h2 class="text-dark mb-4"><u>Forecast</u></h2>
-                    
                     <!-- Sunday -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div class="text-left" style="min-width: 100px">
                             <h5>Sun</h5>
                         </div>
-                        <div>
+                        <div class="text-center" style="min-width: 100px">
                             <i class="${getRainProbLogo(dailyRainProb[0])}"></i>
                             <span class="text-dark">${dailyRainProb[0]}%</span>
                         </div>
-                        <div class="text-end">
-                            <div class="text-secondary">${dailyMin[0]}°</div>
-                            <div>${dailyMax[0]}°</div>
+                        <div class="text-end" style="min-width: 100px">
+                            <div class="text-secondary">${dailyMin[0]}°/${dailyMax[0]}°</div>
                         </div>
                     </div>
 
                     <!-- Monday -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div class="text-left" style="min-width: 100px">
                             <h5>Mon</h5>
                         </div>
-                        <div>
+                        <div class="text-center" style="min-width: 100px">
                             <i class="${getRainProbLogo(dailyRainProb[1])}"></i>
                             <span class="text-dark">${dailyRainProb[1]}%</span>
                         </div>
-                        <div class="text-end">
-                            <div class="text-secondary">${dailyMin[1]}°</div>
-                            <div>${dailyMax[1]}°</div>
+                        <div class="text-end" style="min-width: 100px">
+                            <div class="text-secondary">${dailyMin[1]}°/${dailyMax[1]}°</div>
                         </div>
                     </div>
 
                     <!-- Tuesday -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div class="text-left" style="min-width: 100px">
                             <h5>Tues</h5>
                         </div>
-                        <div>
+                        <div class="text-center" style="min-width: 100px">
                             <i class="${getRainProbLogo(dailyRainProb[2])}"></i>
                             <span class="text-dark">${dailyRainProb[2]}%</span>
                         </div>
-                        <div class="text-end">
-                            <div class="text-secondary">${dailyMin[2]}°</div>
-                            <div>${dailyMax[2]}°</div>
+                        <div class="text-end" style="min-width: 100px">
+                            <div class="text-secondary">${dailyMin[2]}°/${dailyMax[2]}°</div>
                         </div>
                     </div>
 
                     <!-- Wednesday -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div class="text-left" style="min-width: 100px">
                             <h5>Wed</h5>
                         </div>
-                        <div>
+                        <div class="text-center" style="min-width: 100px">
                             <i class="${getRainProbLogo(dailyRainProb[3])}"></i>
                             <span class="text-dark">${dailyRainProb[3]}%</span>
                         </div>
-                        <div class="text-end">
-                            <div class="text-secondary">${dailyMin[3]}°</div>
-                            <div>${dailyMax[3]}°</div>
+                        <div class="text-end" style="min-width: 100px">
+                            <div class="text-secondary">${dailyMin[3]}°/${dailyMax[3]}°</div>
                         </div>
                     </div>
 
                     <!-- Thursday -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div class="text-left" style="min-width: 100px">
                             <h5>Thurs</h5>
                         </div>
-                        <div>
+                        <div class="text-center" style="min-width: 100px">
                             <i class="${getRainProbLogo(dailyRainProb[4])}"></i>
                             <span class="text-dark">${dailyRainProb[4]}%</span>
                         </div>
-                        <div class="text-end">
-                            <div class="text-secondary">${dailyMin[4]}°</div>
-                            <div>${dailyMax[4]}°</div>
+                        <div class="text-end" style="min-width: 100px">
+                            <div class="text-secondary">${dailyMin[4]}°/${dailyMax[4]}°</div>
                         </div>
                     </div>
 
                     <!-- Friday -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div class="text-left" style="min-width: 100px">
                             <h5>Fri</h5>
                         </div>
-                        <div>
+                        <div class="text-center" style="min-width: 100px">
                             <i class="${getRainProbLogo(dailyRainProb[5])}"></i>
                             <span class="text-dark">${dailyRainProb[5]}%</span>
                         </div>
-                        <div class="text-end">
-                            <div class="text-secondary">${dailyMin[5]}°</div>
-                            <div>${dailyMax[5]}°</div>
+                        <div class="text-end" style="min-width: 100px">
+                            <div class="text-secondary">${dailyMin[5]}°/${dailyMax[5]}°</div>
                         </div>
                     </div>
 
                     <!-- Saturday -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <div>
+                        <div class="text-left" style="min-width: 100px">
                             <h5>Sat</h5>
                         </div>
-                        <div>
+                        <div class="text-center" style="min-width: 100px">
                             <i class="${getRainProbLogo(dailyRainProb[6])}"></i>
                             <span class="text-dark">${dailyRainProb[6]}%</span>
                         </div>
-                        <div class="text-end">
-                            <div class="text-secondary">${dailyMin[6]}°</div>
-                            <div>${dailyMax[6]}°</div>
+                        <div class="text-end" style="min-width: 100px">
+                            <div class="text-secondary">${dailyMin[6]}°/${dailyMax[6]}°</div>
                         </div>
                     </div>
-                `;
+                `
                 }
             } catch (error) {
-            console.error('Error fetching weather data:', error);
+            console.error('Error fetching weather data:', error)
         }
     }
 
-function getUserLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                fetchWeather(latitude, longitude);
-            },
-            (error) => {
-                console.error('Error getting location:', error);
-                Swal.fire("Unable to fetch location. Please enable location services.");
-            }
-        );
-    } else {
-        Swal.fire("Geolocation is not supported by your browser.");
+    // api for getting the geo location of the user
+    function getUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude
+                    const longitude = position.coords.longitude
+                    fetchWeather(latitude, longitude)
+                },
+                (error) => {
+                    console.error('Error getting location:', error)
+                    Swal.fire("Unable to fetch location. Please enable location services.")
+                }
+            )
+        } else {
+            Swal.fire("Geolocation is not supported by your browser.")
+        }
     }
-}
 
-getUserLocation();
+    getUserLocation()
     </script>
 </body>
 </html>
