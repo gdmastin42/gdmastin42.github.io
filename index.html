@@ -84,13 +84,13 @@
 
     <!-- script for logic for weather data -->
     <script>
-async function fetchWeather() {
+async function fetchWeather(latitude, longitude) {
     const weatherInfo = document.getElementById('forecastData');
     const locationInfo = document.getElementById('locationData');
     const rainInfo = document.getElementById('rainData');
     const humidityInfo = document.getElementById('humidityData');
     
-    const apiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=36.1628&longitude=-85.5016&current=temperature_2m,cloud_cover,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,cloud_cover&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago&forecast_days=7';
+    const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,cloud_cover,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,cloud_cover&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto&forecast_days=7`;
 
     try {
         const objResponse = await fetch(apiUrl);
@@ -146,7 +146,7 @@ async function fetchWeather() {
 
             // Update location info
             locationInfo.innerHTML = `
-                <h1 class="text-dark p-3"><i class="bi bi-geo-alt-fill me-1"></i>Cookeville</h1>
+                <h1 class="text-dark p-3"><i class="bi bi-geo-alt-fill me-1"></i>lat:${latitude}, Long:${longitude}</h1>
                 <div class="mb-3 d-flex align-items-center justify-content-center">
                     <h1 class="text-dark"><i class="${tempLogo}">${temperature}°F</i></h1>
                 </div>
@@ -278,13 +278,31 @@ async function fetchWeather() {
                     </div>
                 </div>
             `;
-        }
-    } catch (error) {
+            }
+        } catch (error) {
         console.error('Error fetching weather data:', error);
     }
 }
 
-fetchWeather();
+function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                fetchWeather(latitude, longitude);
+            },
+            (error) => {
+                console.error('Error getting location:', error);
+                alert('Unable to fetch location. Please enable location services.');
+            }
+        );
+    } else {
+        alert('Geolocation is not supported by your browser.');
+    }
+}
+
+getUserLocation();
     </script>
 </body>
 </html>
