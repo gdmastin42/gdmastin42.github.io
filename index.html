@@ -109,7 +109,7 @@
                     data.address.house ||
                     data.address.building || 
                     data.address.locality ||
-                    'Your mom'
+                    'Location Unknown'
 
         } catch (error) {
             console.error("Error fetching city name:", error)
@@ -317,26 +317,35 @@
         }
     }
 
-    // api for getting the geo location of the user
-    function getUserLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const latitude = position.coords.latitude
-                    const longitude = position.coords.longitude
-                    fetchWeather(latitude, longitude)
-                },
-                (error) => {
-                    console.error('Error getting location:', error)
-                    Swal.fire("Unable to fetch location. Please enable location services.")
-                }
-            )
-        } else {
-            Swal.fire("Geolocation is not supported by your browser.")
-        }
-    }
+    // // api for getting the geo location of the user
+    // function getUserLocation() {
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition(
+    //             (position) => {
+    //                 const latitude = position.coords.latitude
+    //                 const longitude = position.coords.longitude
+    //                 fetchWeather(latitude, longitude)
+    //             },
+    //             (error) => {
+    //                 console.error('Error getting location:', error)
+    //                 Swal.fire("Unable to fetch location. Please enable location services.")
+    //             }
+    //         )
+    //     } else {
+    //         Swal.fire("Geolocation is not supported by your browser.")
+    //     }
+    // }
 
-    getUserLocation()
+    // getUserLocation()
+    function getUserLocation() {
+    // Simulate a location by providing custom latitude and longitude
+    const latitude = 40.7128; // Example: New York City latitude
+    const longitude = -74.0060; // Example: New York City longitude
+    fetchWeather(latitude, longitude);
+}
+
+getUserLocation();
+
     </script>
 </body>
 </html>
