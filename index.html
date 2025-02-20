@@ -96,7 +96,7 @@
         try {
             const response = await fetch(apiUrl)
             const data = await response.json()
-            return data.address.city || data.address.town || data.address.village || data.address.suburb || data.address.municipality || 'Location Unknown'
+            return data.address.city || data.address.town || data.address.village || data.address.suburb || data.address.municipality || data.address.community || data.address.hamlet || 'Location Unknown'
 
         } catch (error) {
             console.error("Error fetching city name:", error)
@@ -327,3 +327,7 @@
     </script>
 </body>
 </html>
+<!-- 
+    I used chatgpt to debug why the city name was returning unknown for some and for some the correct location,
+    used it to debug the api call to openMeteo, used to bebug the location services 
+-->
