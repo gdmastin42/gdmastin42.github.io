@@ -96,7 +96,7 @@
         try {
             const response = await fetch(apiUrl)
             const data = await response.json()
-            return data.address.city || data.address.town || data.address.village || data.address.suburb || data.address.municipality || data.address.community || data.address.hamlet || data.address.unincorporated_community || 'Location Unknown'
+            return data.address.city || data.address.town || data.address.village || data.address.suburb || data.address.municipality || data.address.community || data.address.hamlet || data.address.unincorporated_community || data.address.house || data.address.building 'Location Unknown'
 
         } catch (error) {
             console.error("Error fetching city name:", error)
