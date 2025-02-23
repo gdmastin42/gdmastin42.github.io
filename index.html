@@ -147,7 +147,8 @@
         // names it cityName that way it can be used in 
         const cityName = await fetchCityName(latitude, longitude)
 
-        const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,cloud_cover,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,cloud_cover&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto&forecast_days=7`
+        // const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=is_day,temperature_2m,cloud_cover,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,cloud_cover&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto&forecast_days=7`
+        const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=35&longitude=-85&current=is_day,temperature_2m,cloud_cover,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,cloud_cover&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation&daily=temperature_2m_max,sunrise,sunset,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto&forecast_days=7`
 
         try {
             const objResponse = await fetch(apiUrl)
@@ -159,6 +160,8 @@
                 const rainProbability = objData.hourly.precipitation_probability[167]
                 const humidity = objData.current.relative_humidity_2m
                 const cloudCover = objData.current.cloud_cover
+                const isDay = objData.current.is_day
+                const snowfall = objData.current.snowfall
 
                 // Get daily forecast data
                 const dailyMax = objData.daily.temperature_2m_max
@@ -166,7 +169,7 @@
                 const dailyRainProb = objData.daily.precipitation_probability_max
                                     
                 // Call the function with the retrieved cloud cover data
-                setBackground(cloudCover)
+                setBackground(cloudCover,isDay,snowfall)
 
                 // Temperature icon logic
                 let tempLogo
@@ -191,6 +194,17 @@
                 } else { // heavy rain
                     rainLogo = 'bi-cloud-rain-heavy'
                 }
+
+                // humidity logo
+                let humidityLogo
+                if (humidity < 25) { // low humidity
+                    humidityLogo = 'bi bi-droplet'
+                } else if (humidity < 60) { // medium humidity
+                    humidityLogo = 'bi bi-droplet-half'
+                } else { // high humidity
+                    humidityLogo = 'bi bi-droplet-fill'
+                } 
+                
 
                 // Rain probability icon logic
                 function getRainProbLogo(rainProb) {
@@ -217,7 +231,7 @@
                 // Update rain info
                 rainInfo.innerHTML = 
                 `
-                    <h1 class="text-dark text-center"><u><i class="${getRainProbLogo(dailyRainProb)} aria-hidden="true" me-1"></i>Rain</u></h1>
+                    <h1 class="text-dark text-center"><u><i class="${rainLogo} aria-hidden="true" me-1"></i>Rain</u></h1>
                     <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
                         <h3 class="text-dark mb-2" aria-label="the current rain total in inches">${rainTotal}″ inches</h3>
                         <h3 class="text-dark" aria-label="the current rain probibility">${Math.round(rainProbability)}%</h3>
@@ -227,7 +241,7 @@
                 // Update humidity info
                 humidityInfo.innerHTML = 
                 `
-                    <h1 class="text-dark text-center icon-text"><u><i class="bi bi-moisture me-1"></i>Humidity</u></h1>
+                    <h1 class="text-dark text-center icon-text"><u><i class="${humidityLogo} me-1"></i>Humidity</u></h1>
                     <div class="flex-grow-1 d-flex align-items-center justify-content-center">
                         <h2 class="text-dark" aria-label="the current humidity in percentage">${humidity}%</h2>
                     </div>
@@ -248,11 +262,11 @@
                                 <h5 aria-label="the day of the week"><u>${daysOfWeek[dayIndex]}</u></h5>
                             </div>
                             <div class="text-center" style="min-width: 100px">
-                                <i class="${getRainProbLogo(dailyRainProb[i])}" aria-hidden="true"></i>
-                                <span aria-label="the rain probibility of the day of the week" class="text-dark">${Math.round(dailyRainProb[i])}%</span>
+                                
+                                <h5 aria-label="the rain probibility of the day of the week" class="text-dark"><i class="${getRainProbLogo(dailyRainProb[i])} me-2" aria-hidden="true"></i>${Math.round(dailyRainProb[i])}%</h5>
                             </div>
                             <div class="text-end" style="min-width: 100px">
-                                <div aria-label="the minimum and maximum temperatures of the day of the week" class="text-secondary">${Math.round(dailyMin[i])}°/${Math.round(dailyMax[i])}°</div>
+                                <h5 aria-label="the minimum and maximum temperatures of the day of the week" class="text-dark">${Math.round(dailyMin[i])}°/${Math.round(dailyMax[i])}°</h5>
                             </div>
                         </div>
                     `
@@ -269,15 +283,27 @@
     }
 
     // changes background to different photos depending on the cloud coverage
-    function setBackground(cloudCover) {
+    function setBackground(cloudCover,isDay,snowfall,rainTotal) {
         let backgroundImage
 
-        if (cloudCover < 35) { // Mostly clear sky
-            backgroundImage = "icons/sunny.jpg"  
-        } else if (cloudCover < 65) { // Partly cloudy
-            backgroundImage = "icons/partlyCloudy.jpg" 
-        } else{ // Mostly cloudy
-            backgroundImage = "icons/cloudy.jpg"  
+        if (cloudCover < 35 && isDay) { // Mostly clear sky daytime
+            backgroundImage = "icon/sunnyDay.jpeg"  
+        } else if (cloudCover < 65 && isDay) { // Partly cloudy daytime
+            backgroundImage = "icons/cloudyDay.jpeg" 
+        } else if(cloudCover >= 65 && isDay){ // overcast daytime
+            backgroundImage = "icons/overcastDay.jpeg"  
+        } else if (cloudCover < 35 && !isDay) { // Mostly clear sky night time
+            backgroundImage = "icons/clearNight.jpeg"  
+        } else if (cloudCover < 65 && !isDay) { // Partly cloudy night time
+            backgroundImage = "icons/cloudyNight.jpeg" 
+        } else if(cloudCover >= 65 && !isDay){ // overcast night time
+            backgroundImage = "icons/overcastNight.jpeg" 
+        } else if (isDay && snowfall > 0) { // snowing day time
+            backgroundImage = "icons/sunnyDay.jpeg"  
+        } else if (!isDay && snowfall > 0) { // snowing night time
+            backgroundImage = "icons/cloudyDay.jpeg" 
+        } else if(isDay && rainTotal > 0){ // rainy day
+            backgroundImage = "icons/rainySkyDay.jpeg" 
         }
         // Apply background image
         document.body.style.background = `url('${backgroundImage}') no-repeat center center fixed`

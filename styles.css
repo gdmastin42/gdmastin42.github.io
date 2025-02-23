@@ -3,8 +3,10 @@
     white-space: nowrap
 }
 
-/* font */
-
+/* card colors */
+.card {
+  background-color: rgba(255, 255, 255, 0.3)!important;
+}
 
 /* added a loading screen for while the data is loading in */
 #loadingScreen {
