@@ -6,7 +6,11 @@
     <meta name="theme-color" content="#343a40">
     <title>Weather App</title>
 
+    <!-- this is for the icons -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -22,60 +26,72 @@
         rel="stylesheet"
     >   
 
-    <!-- fixes issue i was having with the text wrapping on smaller cards -->
-    <style>
-        .icon-text {
-            white-space: nowrap
-        }
-    </style>
+    <link href="styles.css" rel="stylesheet">
 
 </head>
-<body class="bg-secondary">
-    <!-- div holds the location data -->
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="p-1 col-12 col-md-8">
-                <div class="card h-100 rounded-5 bg-light text-center" id="locationData">
-                    <!-- html is in the script -->
-                </div>
-            </div>
+<!-- secondary color as fall back incase photos dont load -->
+<body class='bg-light'>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <div class="loading-content">
+            <!-- this is form https://uiverse.io/adamgiebl/thin-lionfish-5 -->
+            <section class="dots-container">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </section>
+            <h2 class="mt-5" aria-label="loading weather data">Loading Weather Data. Please Wait.</h2>
         </div>
     </div>
 
-    <!-- rain and humidity container -->
-    <div class="container mt-2">
-        <div class="row justify-content-center">
-            <!-- Rain card -->
-            <div class="p-1 col-6 col-md-4">
-                <div class="card h-100 rounded-5 bg-light">
-                    <div class="card-body d-flex flex-column text-center" id="rainData">
-                        <!-- html in the script -->
-                    </div>
-                </div>
-            </div>
-            <!-- Humidity card -->
-            <div class="p-1 col-6 col-md-4">
-                <div class="card h-100 rounded-5 bg-light">
-                    <div class="card-body d-flex flex-column text-center" id="humidityData">
-                        <!-- html in the script -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- div that holds the weather forecast data and -->
-    <div class="container mt-3">
-        <div class="row justify-content-center">
-            <div class="p-1 col-12 col-md-8">
-                <div class="card rounded-5 bg-light">
-                    <div class="card-body" id="forecastData">
+    <main>
+        <!-- div holds the location data -->
+        <section class="container mt-5" aria-label="Your Current Location">
+            <div class="row justify-content-center">
+                <div class="p-1 col-12 col-md-8">
+                    <div class="card h-100 rounded-5 bg-light text-center" aria-label="current weather based on your location" id="locationData">
                         <!-- html is in the script -->
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+
+        <!-- rain and humidity container -->
+        <section class="container mt-2" aria-label="Your current rain and humidity conditions">
+            <div class="row justify-content-center">
+                <!-- Rain card -->
+                <div class="p-1 col-6 col-md-4">
+                    <div class="card h-100 rounded-5 bg-light" aria-label="the current ammount of rain and current chance of rain">
+                        <div class="card-body d-flex flex-column text-center" id="rainData">
+                            <!-- html in the script -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Humidity card -->
+                <div class="p-1 col-6 col-md-4">
+                    <div class="card h-100 rounded-5 bg-light" aria-label="The current humidity">
+                        <div class="card-body d-flex flex-column text-center" id="humidityData">
+                            <!-- html in the script -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- div that holds the weather forecast data and -->
+        <section class="container mt-3" aria-label="the current forcast for the next 7 days">
+            <div class="row justify-content-center">
+                <div class="p-1 col-12 col-md-8">
+                    <div class="card rounded-5 bg-light" aria-label="this is your 7 day forcast">
+                        <div class="card-body" id="forecastData">
+                            <!-- html is in the script -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
     <!-- sweet alerts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -91,11 +107,11 @@
 
     // passes lat and long from the geo location
     async function fetchCityName(latitude, longitude) {
-    const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+    const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
     
     try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+        const response = await fetch(apiUrl)
+        const data = await response.json()
 
         // Extend the fallback logic
         return data.address.city || 
@@ -109,12 +125,12 @@
                data.address.county || 
                data.address.region || 
                data.address.state || 
-               'Location Unknown';
+               'Location Unknown'
 
     } catch (error) {
-        console.error("Error fetching city name:", error);
-        Swal.fire("Error fetching city");
-        return 'Location Unknown';
+        console.error("Error fetching city name:", error)
+        Swal.fire("Error fetching city")
+        return 'Location Unknown'
     }
 }
 
@@ -125,6 +141,8 @@
         const locationInfo = document.getElementById('locationData')
         const rainInfo = document.getElementById('rainData')
         const humidityInfo = document.getElementById('humidityData')
+
+
 
         // names it cityName that way it can be used in 
         const cityName = await fetchCityName(latitude, longitude)
@@ -140,11 +158,15 @@
                 const rainTotal = objData.current.precipitation
                 const rainProbability = objData.hourly.precipitation_probability[167]
                 const humidity = objData.current.relative_humidity_2m
+                const cloudCover = objData.current.cloud_cover
 
                 // Get daily forecast data
                 const dailyMax = objData.daily.temperature_2m_max
                 const dailyMin = objData.daily.temperature_2m_min
                 const dailyRainProb = objData.daily.precipitation_probability_max
+                                    
+                // Call the function with the retrieved cloud cover data
+                setBackground(cloudCover)
 
                 // Temperature icon logic
                 let tempLogo
@@ -186,19 +208,19 @@
                 // Update location info
                 locationInfo.innerHTML = 
                 `
-                    <h1 class="text-dark p-3"><i class="bi bi-geo-alt-fill me-1"></i>${cityName}</h1>
+                    <h1 class="text-dark p-3" aria-label="Current location:"><i class="bi bi-geo-alt-fill me-1" aria-hidden="true"></i><u>${cityName}</u></h1>
                     <div class="mb-3 d-flex align-items-center justify-content-center">
-                        <h1 class="text-dark"><i class="${tempLogo}">${temperature}°F</i></h1>
+                    <h1 class="text-dark" aria-label="Current temperature:"><i class="${tempLogo}" aria-hidden="true">${Math.round(temperature)}°F</i></h1>
                     </div>
                 `
                 
                 // Update rain info
                 rainInfo.innerHTML = 
                 `
-                    <h1 class="text-dark text-center"><u><i class="${getRainProbLogo(dailyRainProb)} me-1"></i>Rain</u></h1>
+                    <h1 class="text-dark text-center"><u><i class="${getRainProbLogo(dailyRainProb)} aria-hidden="true" me-1"></i>Rain</u></h1>
                     <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
-                        <h3 class="text-dark mb-2">${rainTotal}″ inches</h3>
-                        <h3 class="text-dark">${rainProbability}%</h3>
+                        <h3 class="text-dark mb-2" aria-label="the current rain total in inches">${rainTotal}″ inches</h3>
+                        <h3 class="text-dark" aria-label="the current rain probibility">${Math.round(rainProbability)}%</h3>
                     </div>
                 `
 
@@ -207,151 +229,107 @@
                 `
                     <h1 class="text-dark text-center icon-text"><u><i class="bi bi-moisture me-1"></i>Humidity</u></h1>
                     <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-                        <h2 class="text-dark">${humidity}%</h2>
+                        <h2 class="text-dark" aria-label="the current humidity in percentage">${humidity}%</h2>
                     </div>
                 `
                 
-                // 7-day forecast 
-                weatherInfo.innerHTML = 
-                `
-                    <h2 class="text-dark mb-4"><u>Forecast</u></h2>
-                    <!-- Sunday -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-left" style="min-width: 100px">
-                            <h5>Sun</h5>
-                        </div>
-                        <div class="text-center" style="min-width: 100px">
-                            <i class="${getRainProbLogo(dailyRainProb[0])}"></i>
-                            <span class="text-dark">${dailyRainProb[0]}%</span>
-                        </div>
-                        <div class="text-end" style="min-width: 100px">
-                            <div class="text-secondary">${dailyMin[0]}°/${dailyMax[0]}°</div>
-                        </div>
-                    </div>
+                
+                    const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
+                    const today = new Date().getDay() // Get index of today's day
 
-                    <!-- Monday -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-left" style="min-width: 100px">
-                            <h5>Mon</h5>
-                        </div>
-                        <div class="text-center" style="min-width: 100px">
-                            <i class="${getRainProbLogo(dailyRainProb[1])}"></i>
-                            <span class="text-dark">${dailyRainProb[1]}%</span>
-                        </div>
-                        <div class="text-end" style="min-width: 100px">
-                            <div class="text-secondary">${dailyMin[1]}°/${dailyMax[1]}°</div>
-                        </div>
-                    </div>
+                    weatherInfo.innerHTML = `<h2 class="text-dark mb-4" arial-label="the current 7 day forecast"><u>7-Day Forecast</u></h2>`
 
-                    <!-- Tuesday -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-left" style="min-width: 100px">
-                            <h5>Tues</h5>
+                    for (let i = 0; i < 7; i++) {
+                    let dayIndex = (today + i) % 7 // Wrap around the week
+                    weatherInfo.innerHTML += 
+                    `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-left" style="min-width: 100px">
+                                <h5 aria-label="the day of the week"><u>${daysOfWeek[dayIndex]}</u></h5>
+                            </div>
+                            <div class="text-center" style="min-width: 100px">
+                                <i class="${getRainProbLogo(dailyRainProb[i])}" aria-hidden="true"></i>
+                                <span aria-label="the rain probibility of the day of the week" class="text-dark">${Math.round(dailyRainProb[i])}%</span>
+                            </div>
+                            <div class="text-end" style="min-width: 100px">
+                                <div aria-label="the minimum and maximum temperatures of the day of the week" class="text-secondary">${Math.round(dailyMin[i])}°/${Math.round(dailyMax[i])}°</div>
+                            </div>
                         </div>
-                        <div class="text-center" style="min-width: 100px">
-                            <i class="${getRainProbLogo(dailyRainProb[2])}"></i>
-                            <span class="text-dark">${dailyRainProb[2]}%</span>
-                        </div>
-                        <div class="text-end" style="min-width: 100px">
-                            <div class="text-secondary">${dailyMin[2]}°/${dailyMax[2]}°</div>
-                        </div>
-                    </div>
-
-                    <!-- Wednesday -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-left" style="min-width: 100px">
-                            <h5>Wed</h5>
-                        </div>
-                        <div class="text-center" style="min-width: 100px">
-                            <i class="${getRainProbLogo(dailyRainProb[3])}"></i>
-                            <span class="text-dark">${dailyRainProb[3]}%</span>
-                        </div>
-                        <div class="text-end" style="min-width: 100px">
-                            <div class="text-secondary">${dailyMin[3]}°/${dailyMax[3]}°</div>
-                        </div>
-                    </div>
-
-                    <!-- Thursday -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-left" style="min-width: 100px">
-                            <h5>Thurs</h5>
-                        </div>
-                        <div class="text-center" style="min-width: 100px">
-                            <i class="${getRainProbLogo(dailyRainProb[4])}"></i>
-                            <span class="text-dark">${dailyRainProb[4]}%</span>
-                        </div>
-                        <div class="text-end" style="min-width: 100px">
-                            <div class="text-secondary">${dailyMin[4]}°/${dailyMax[4]}°</div>
-                        </div>
-                    </div>
-
-                    <!-- Friday -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-left" style="min-width: 100px">
-                            <h5>Fri</h5>
-                        </div>
-                        <div class="text-center" style="min-width: 100px">
-                            <i class="${getRainProbLogo(dailyRainProb[5])}"></i>
-                            <span class="text-dark">${dailyRainProb[5]}%</span>
-                        </div>
-                        <div class="text-end" style="min-width: 100px">
-                            <div class="text-secondary">${dailyMin[5]}°/${dailyMax[5]}°</div>
-                        </div>
-                    </div>
-
-                    <!-- Saturday -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-left" style="min-width: 100px">
-                            <h5>Sat</h5>
-                        </div>
-                        <div class="text-center" style="min-width: 100px">
-                            <i class="${getRainProbLogo(dailyRainProb[6])}"></i>
-                            <span class="text-dark">${dailyRainProb[6]}%</span>
-                        </div>
-                        <div class="text-end" style="min-width: 100px">
-                            <div class="text-secondary">${dailyMin[6]}°/${dailyMax[6]}°</div>
-                        </div>
-                    </div>
-                `
+                    `
+                    }
+                    // After all data is loaded and processed
+                    document.getElementById('loadingScreen').style.display = 'none'
+                    document.querySelector('main').style.display = 'block'
                 }
             } catch (error) {
             console.error('Error fetching weather data:', error)
+            Swal.fire("Failed to load weather data. Please try again.")
+            document.getElementById('loadingScreen').style.display = 'none'
         }
     }
+
+    // changes background to different photos depending on the cloud coverage
+    function setBackground(cloudCover) {
+        let backgroundImage
+
+        if (cloudCover < 35) { // Mostly clear sky
+            backgroundImage = "icons/sunny.jpg"  
+        } else if (cloudCover < 65) { // Partly cloudy
+            backgroundImage = "icons/partlyCloudy.jpg" 
+        } else{ // Mostly cloudy
+            backgroundImage = "icons/cloudy.jpg"  
+        }
+        // Apply background image
+        document.body.style.background = `url('${backgroundImage}') no-repeat center center fixed`
+        document.body.style.backgroundSize = "cover"
+    }
+
 
     // api for getting the geo location of the user
     function getUserLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    // grabs the cords
                     const latitude = position.coords.latitude
                     const longitude = position.coords.longitude
+                    // fetchs weather based on the cords
                     fetchWeather(latitude, longitude)
                 },
                 (error) => {
+                    console.error('Error getting location:', error)
+                    document.getElementById('loadingScreen').style.display = 'none'
+
                     console.error('Error getting location:', error)
                     Swal.fire("Unable to fetch location. Please enable location services.")
                 }
             )
         } else {
+            document.getElementById('loadingScreen').style.display = 'none'
             Swal.fire("Geolocation is not supported by your browser.")
         }
     }
     getUserLocation()
 
-// //this code block is for debuging cityName and location
-//     
-//     function getUserLocation() {
-//     const latitude = 32.75;
-//     const longitude = -97.33;
-//     fetchWeather(latitude, longitude);
-// }
-// getUserLocation();
+    // //this code block is for debuging cityName and location
+    //     
+    //     function getUserLocation() {
+    //     const latitude = 32.75
+    //     const longitude = -97.33
+    //     fetchWeather(latitude, longitude)
+    // }
+    // getUserLocation()
 
     </script>
 </body>
 </html>
 <!-- 
     I used chatgpt to debug why the city name was returning unknown for some and for some the correct location,
-    used it to debug the api call to openMeteo, used to bebug the location services 
+    used it to debug the api call to openMeteo, used to bebug the location services, help optimize the forcast logic
+    to be less hard coded in, help debug the background image swapper, and help debug the loading screen
+
+    Also i used the website https://uiverse.io and more specific https://uiverse.io/adamgiebl/thin-lionfish-5
+    for my loading icon (There is a styles.css file used for this)
+
+    used this website to help with all the conversions of the icons https://favicon.io/favicon-generator/
 -->
