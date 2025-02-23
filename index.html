@@ -223,10 +223,12 @@
                 locationInfo.innerHTML = 
                 `
                     <h1 class="text-dark p-3" aria-label="Current location:"><i class="bi bi-geo-alt-fill me-1" aria-hidden="true"></i><u>${cityName}</u></h1>
-                    <div class="mb-3 d-flex align-items-center justify-content-center">
-                    <h1 class="text-dark" aria-label="Current temperature:"><i class="${tempLogo}" aria-hidden="true">${Math.round(temperature)}°F</i></h1>
+                    <div class="mb-2 d-flex flex-column align-items-center justify-content-center">
+                        <h1 class="text-dark" aria-label="Current temperature:"><i class="${tempLogo}" aria-hidden="true"></i>${Math.round(temperature)}°F</h1>
+                        <h3 class="text-dark mt-2" aria-label="High and low Temperature:">H:${Math.round(dailyMax[0])}° L:${Math.round(dailyMin[0])}°</h3>
                     </div>
                 `
+
                 
                 // Update rain info
                 rainInfo.innerHTML = 
@@ -286,23 +288,23 @@
     function setBackground(cloudCover,isDay,snowfall,rainTotal) {
         let backgroundImage
 
-        if (cloudCover < 35 && isDay) { // Mostly clear sky daytime
+        if (cloudCover < 35 && isDay == 1) { // Mostly clear sky daytime
             backgroundImage = "icon/sunnyDay.jpeg"  
-        } else if (cloudCover < 65 && isDay) { // Partly cloudy daytime
+        } else if (cloudCover < 65 && isDay == 1) { // Partly cloudy daytime
             backgroundImage = "icons/cloudyDay.jpeg" 
-        } else if(cloudCover >= 65 && isDay){ // overcast daytime
+        } else if(cloudCover >= 65 && isDay == 1){ // overcast daytime
             backgroundImage = "icons/overcastDay.jpeg"  
-        } else if (cloudCover < 35 && !isDay) { // Mostly clear sky night time
+        } else if (cloudCover < 35 && isDay == 0) { // Mostly clear sky night time
             backgroundImage = "icons/clearNight.jpeg"  
-        } else if (cloudCover < 65 && !isDay) { // Partly cloudy night time
+        } else if (cloudCover < 65 && isDay == 0) { // Partly cloudy night time
             backgroundImage = "icons/cloudyNight.jpeg" 
-        } else if(cloudCover >= 65 && !isDay){ // overcast night time
+        } else if(cloudCover >= 65 && isDay == 0){ // overcast night time
             backgroundImage = "icons/overcastNight.jpeg" 
-        } else if (isDay && snowfall > 0) { // snowing day time
+        } else if (snowfall > 0 && isDay == 1) { // snowing day time
             backgroundImage = "icons/sunnyDay.jpeg"  
-        } else if (!isDay && snowfall > 0) { // snowing night time
+        } else if (snowfall > 0 && isDay == 0 ) { // snowing night time
             backgroundImage = "icons/cloudyDay.jpeg" 
-        } else if(isDay && rainTotal > 0){ // rainy day
+        } else if(rainTotal > 0 && isDay == 1){ // rainy day
             backgroundImage = "icons/rainySkyDay.jpeg" 
         }
         // Apply background image
